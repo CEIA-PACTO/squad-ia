@@ -1,14 +1,14 @@
-# item_tower.py
+from sklearn.preprocessing import LabelEncoder
+import pandas as pd
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from curatorship import *
 
-
 class ItemTower:
     def __init__(self, path='../dataframes/desafios.csv'):
-        self.df = pd.read_csv(path, sep='\t', encoding='iso-8859-1')
+        self.df = pd.read_csv(path)
         self.scaler = StandardScaler()
         self.item_embeddings = None
         self.pca = PCA(n_components=5)
@@ -21,25 +21,32 @@ class ItemTower:
         if missing_columns:
             raise KeyError(f"Faltam as colunas necessárias: {', '.join(missing_columns)}")
 
-        # Garantir que as colunas corretas estão sendo usadas
-        self.df = self.df.fillna(0)  # Preencher valores NaN com 0
+        # Preencher valores ausentes com 0
+        self.df = self.df.fillna(0)
 
-        features_to_use = ['intensidade', 'tipo', 'descricao']
+        features_to_use = ['intensidade', 'tipo']
 
-        # Verifique a existência de dados para as colunas específicas
+        # Remover linhas com valores nulos nas colunas importantes
         self.df = self.df.dropna(subset=features_to_use)
 
-        # Normalização dos dados
+        # Codificar as colunas categóricas
+        label_encoder = LabelEncoder()
+        self.df['intensidade'] = label_encoder.fit_transform(self.df['intensidade'])
+        self.df['tipo'] = label_encoder.fit_transform(self.df['tipo'])
+
+        # Normalizar
         scaled = self.scaler.fit_transform(self.df[features_to_use])
 
-        # Ajustar o número de componentes do PCA de acordo com a quantidade de dados
+        # PCA
         n_components = min(5, scaled.shape[0], scaled.shape[1])
-
-        # Aplicando PCA
         self.pca = PCA(n_components=n_components)
         self.item_embeddings = self.pca.fit_transform(scaled)
 
+        # ✅ Adicione aqui o desafio_codigo
+        self.df['desafio_codigo'] = self.df.index
+
     def get_item_embedding(self, desafio_codigo):
+
         if self.item_embeddings is None:
             self.preprocess()
         idx = self.df[self.df['desafio_codigo'] == desafio_codigo].index
