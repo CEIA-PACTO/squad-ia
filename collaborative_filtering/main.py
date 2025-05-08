@@ -3,6 +3,7 @@ import sys
 
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
 from tensorflow.keras import models
@@ -83,9 +84,27 @@ def main():
 
     model.summary()
     plot_model(model, to_file='collaborative_filtering_model.png', show_shapes=True)
+    
+    X = ratings[['userId_encoded', 'movieId_encoded']].values
+    y = ratings['rating'].values
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+    
+    # Train the model
+    model.fit(x=[X_train[:,0], X_train[:,1]], y=y_train, 
+              batch_size=64, epochs=5, verbose=1,
+              validation_data=([X_test[:,0], X_test[:,1]], y_test))
+    
+    predictions = model.predict([X_test[:,0], X_test[:,1]])
 
+    results = np.column_stack((X_test, predictions))
 
+    print("Predictions:")
+    print(results[:10])
+
+    results_df = pd.DataFrame(results, columns=['userId', 'movieId', 'predicted_rating'])
+    print("Results DataFrame:")
+    print(results_df.head(3))
 
 if __name__ == "__main__":
     main()
