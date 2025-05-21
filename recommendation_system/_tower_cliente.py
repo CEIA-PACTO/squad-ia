@@ -5,8 +5,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from curatorship import *
 
-# Definir o número de componentes para PCA
-N_COMPONENTS = 5  # ou qualquer valor apropriado, como 8
+
+N_COMPONENTS = 5
 
 class UserTower:
     def __init__(self, path='../dataframes/avaliacaofisica.csv'):

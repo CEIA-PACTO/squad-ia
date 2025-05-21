@@ -36,7 +36,6 @@ class Recommender:
 
         return recommendations
 
-# Exemplo de uso
 if __name__ == "__main__":
     rec = Recommender()
     persona = "Executor"  # Pode testar com "Analista", "Planejador", "Comunicador"
