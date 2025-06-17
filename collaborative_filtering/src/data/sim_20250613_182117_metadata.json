@@ -1,0 +1,17 @@
+{
+    "sim_id": "sim_20250613_182117",
+    "date_created": "2025-06-13 18:21:17",
+    "num_users": 100,
+    "simulation_period": "2025-05-01 to 2025-06-15",
+    "num_interactions": 2042,
+    "num_registrations": 254,
+    "num_completions": 254,
+    "num_ratings": 168,
+    "hexad_distribution": {
+        "Achiever": 0.47,
+        "Free Spirit": 0.25,
+        "Philanthropist": 0.17,
+        "Socialiser": 0.1,
+        "Player": 0.01
+    }
+}
