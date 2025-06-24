@@ -204,7 +204,7 @@ class TreinoRealizado:
         self._duplicates()
         self._features()
         self._encouder()
-
+        self.data.to_csv('tr.csv', index=False)
         ids = self.data[self.ids]
         data = self.data.drop(self.ids, axis=1)
         return ids, data
@@ -214,3 +214,6 @@ if __name__ == '__main__':
     print(avaliacao_fisica)
     a, b = TreinoRealizado().main()
     print(b)
+    aa = pd.concat([''])
+
+    avaliacao_fisica.to_csv()
