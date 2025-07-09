@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<h1 class="mb-4">Dados de Acesso</h1>
+<form action="/questionario" method="post" class="row g-3">
+    <div class="col-md-6">
+        <label for="usuario" class="form-label">Usuário</label>
+        <input type="text" id="usuario" name="usuario" class="form-control" required>
+    </div>
+    <div class="col-md-6">
+        <label for="senha" class="form-label">Senha</label>
+        <input type="password" id="senha" name="senha" class="form-control" required>
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Avançar</button>
+    </div>
+</form>
+{% endblock %}
