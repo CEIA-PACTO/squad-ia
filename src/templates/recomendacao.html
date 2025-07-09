@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Recomendação{% endblock %}
+{% block content %}
+<h1 class="mb-4">Sua Recomendação</h1>
+<p><strong>Exercício:</strong> {{ recomendacao.Recomendacao_Exercicio }}</p>
+<p><strong>Equipamento:</strong> {{ recomendacao.Recomendacao_Equipamento }}</p>
+<h2 class="mt-4">Avalie a recomendação</h2>
+<form action="/avaliar-form" method="post" class="row g-3">
+    <input type="hidden" name="usuario" value="{{ usuario }}">
+    <input type="hidden" name="senha" value="{{ senha }}">
+    <div class="col-md-4">
+        <label for="success" class="form-label">Conseguiu completar?</label>
+        <select id="success" name="success" class="form-select">
+            <option value="true">Sim</option>
+            <option value="false">Não</option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label for="streak" class="form-label">Streak</label>
+        <input type="number" id="streak" name="streak" class="form-control" required>
+    </div>
+    <div class="col-md-4">
+        <label for="progress_pct" class="form-label">Progresso (%)</label>
+        <input type="number" id="progress_pct" name="progress_pct" step="any" class="form-control" required>
+    </div>
+    <div class="col-md-4">
+        <label for="rating" class="form-label">Nota (1-5)</label>
+        <input type="number" id="rating" name="rating" min="1" max="5" class="form-control" required>
+    </div>
+    <div class="col-md-4">
+        <label for="time" class="form-label">Tempo (min)</label>
+        <input type="number" id="time" name="time" class="form-control" required>
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Enviar Avaliação</button>
+    </div>
+</form>
+{% endblock %}
