@@ -1,18 +1,20 @@
-# Base image
-FROM python:3.11-slim
+FROM python:3.12-slim
 
-# Set working directory
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    STREAMLIT_SERVER_HEADLESS=true
+
 WORKDIR /app
-
-# Copy project files
 COPY . /app
 
-# Install dependencies
+RUN apt-get update && apt-get install -y curl && apt-get clean
+
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Expose port
-EXPOSE 8000
+EXPOSE 8000 8501
 
-# Run FastAPI app using uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
+CMD ["/start.sh"]

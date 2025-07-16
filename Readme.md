@@ -1,8 +1,15 @@
 # Squad-ai - Sistema de Recomendação de Desafios Fitness
 
+
+``uvicorn main:app --reload
+``
+
+
 Este projeto implementa um sistema de recomendação baseado em conteúdo para sugerir desafios fitness personalizados aos usuários com base em seus perfis e características dos desafios disponíveis.
 
 ## 🔧 Como Executar
+
+---
 
 1. Clone o repositório:
 
@@ -23,11 +30,28 @@ source .venv/bin/activate  # Linux/macOS
 pip install -r requirements.txt
 ````
 
-4. Execute o sistema de recomendação:
-````
-python recommendation_system/Content_Filter.py
-````
+4. Execução local
 
+````
+# backend;
+uvicorn src.main:app --reload
+````
+````
+# app;
+streamlit run src/app.py
+````
+ou
+
+````
+# Docker build - (1 container com Supervisor)
+docker build -t squad-app .
+docker run -p 9000:8000 squad-app
+````
+````
+# Docker-compose - (serviços separados)
+docker-compose up --build
+````
+---
 ## 📁 Estrutura do Projeto
 
 ```  Squad-ai/

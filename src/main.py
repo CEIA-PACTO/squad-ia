@@ -4,11 +4,12 @@ from fastapi.templating import Jinja2Templates
 
 from src.endpoint.formulario import UsuarioInput, AvaliacaoInput
 from src.endpoint.recomendador import recomendar, avaliar
+from fastapi.staticfiles import StaticFiles
+
 
 app = FastAPI()
 
 templates = Jinja2Templates(directory="src/templates")
-
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
