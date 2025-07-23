@@ -1,11 +1,11 @@
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-
+from fastapi import FastAPI, HTTPException
 from src.endpoint.formulario import UsuarioInput, AvaliacaoInput
-from src.endpoint.recomendador import recomendar, avaliar
+from src.endpoint.recomendador import executar_recomendacao
 from fastapi.staticfiles import StaticFiles
-
+import hashlib
 
 app = FastAPI()
 
@@ -103,9 +103,36 @@ async def avaliar_form(
     context = {"request": request, **resp}
     return templates.TemplateResponse("avaliado.html", context)
 
+import hashlib
+from fastapi import HTTPException
+
+
+def gerar_id(usuario: str | None, senha: str | None) -> str:
+    base = f"{usuario or ''}{senha or ''}"
+    return hashlib.sha256(base.encode("utf-8")).hexdigest()
+
 @app.post("/recomendar")
 def post_recomendar(usuario: UsuarioInput):
-    return recomendar(usuario)
+    try:
+        payload = usuario.dict()
+        uid = gerar_id(payload.get("usuario"), payload.get("senha"))
+
+        # opcional: não salvar senha em claro
+        # payload.pop("senha", None)
+
+        resultado = executar_recomendacao(
+            user_id=uid,
+            payload=payload,
+            path_excel="dataframe/gym_recommendation.xlsx",
+            path_hist_csv="../bd/registro_recomendacoes.csv",
+            path_challenger="dataframe/challenger.json",
+            random_rate=0.4,
+            n_neighbors=50,
+            top_n=5,
+        )
+        return resultado
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/avaliar")
 def post_avaliar(avaliacao: AvaliacaoInput):
