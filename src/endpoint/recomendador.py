@@ -5,17 +5,24 @@ from sklearn.pipeline import Pipeline
 from sklearn.neighbors import NearestNeighbors
 from collections import Counter
 from typing import List, Union, Dict, Any
+import random
+import os
+import json
 
 
 class RecomendadorCF:
     def __init__(
         self,
-        path_excel: str = "../dataframe/gym_recommendation.xlsx",
+        path_excel: str = "dataframe/gym_recommendation.xlsx",
         exerc_col: str = "Exercises",
         exercises_sep: str = ",",
         n_neighbors: int = 50,
         metric: str = "cosine",
     ):
+
+        caminho_atual = os.getcwd()
+        print("Caminho atual:", caminho_atual)
+
         self.path_excel = path_excel
         self.exerc_col = exerc_col
         self.exercises_sep = exercises_sep
@@ -246,17 +253,10 @@ class RecomendadorPersonalizado(RecomendadorCF):
                 break
         return recomendados[:top_n]
 
-
-
-import json
-import os
-import random
-
-
 def executar_recomendacao(
     user_id: str,
     payload: Union[Dict[str, Any], pd.Series, pd.DataFrame, str],
-    path_excel: str = "../dataframe/gym_recommendation.xlsx",
+    path_excel: str = "src/dataframe/gym_recommendation.xlsx",
     path_hist_csv: str = "../../bd/registro_recomendacoes.csv",
     path_challenger: str = "../dataframe/challenger.json",
     random_rate: float = 0.4,

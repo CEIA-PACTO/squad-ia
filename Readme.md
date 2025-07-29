@@ -1,7 +1,10 @@
 # Squad-ai - Sistema de Recomendação de Desafios Fitness
 
 
-``uvicorn main:app --reload
+``
+streamlit run app.py
+
+uvicorn main:app --reload
 ``
 
 

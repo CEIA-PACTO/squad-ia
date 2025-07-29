@@ -6,6 +6,7 @@ from src.endpoint.formulario import UsuarioInput, AvaliacaoInput
 from src.endpoint.recomendador import executar_recomendacao
 from fastapi.staticfiles import StaticFiles
 import hashlib
+from src.endpoint.recomendador import executar_recomendacao
 
 app = FastAPI()
 
@@ -68,7 +69,7 @@ async def recomendar_form(
         importancia_diversao=importancia_diversao,
     )
 
-    rec = recomendar(dados)
+    rec = executar_recomendacao(dados)
     context = {
         "request": request,
         "usuario": usuario,
@@ -123,9 +124,9 @@ def post_recomendar(usuario: UsuarioInput):
         resultado = executar_recomendacao(
             user_id=uid,
             payload=payload,
-            path_excel="dataframe/gym_recommendation.xlsx",
+            path_excel="../dataframe/gym_recommendation.xlsx",
             path_hist_csv="../bd/registro_recomendacoes.csv",
-            path_challenger="dataframe/challenger.json",
+            path_challenger="../dataframe/challenger.json",
             random_rate=0.4,
             n_neighbors=50,
             top_n=5,
