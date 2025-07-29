@@ -38,3 +38,8 @@ def preencher_nulos_coluna(df, coluna, metodo='bootstrap', seed=None):
     col_preenchida.loc[col.isna()] = substitutos
 
     return col_preenchida
+
+
+def calcular_imc(peso, altura):
+    return round(peso / (altura ** 2), 2)
+
