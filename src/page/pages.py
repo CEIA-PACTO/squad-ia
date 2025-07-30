@@ -1,10 +1,8 @@
-import streamlit as st
 import requests
-
+import streamlit as st
 
 def calcular_imc(peso, altura):
     return round(peso / (altura ** 2), 2)
-
 
 def tela_login():
     st.title("🔐 Login")

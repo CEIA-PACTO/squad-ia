@@ -7,12 +7,18 @@ from fastapi import HTTPException
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.metrics.pairwise import cosine_similarity
 from src.endpoint.formulario import UsuarioInput, AvaliacaoInput
-import logging
+from src.models.postgrees import DatabaseInitializer
 
-# === Caminhos ===
+db = DatabaseInitializer(
+        host="localhost",
+        dbname="gameficacao",
+        user="admin",
+        password="admin"
+    )
+
 base_dir = Path(__file__).resolve().parents[2]
-dados_path = base_dir /'src'/ 'dataframe' / 'gym_recommendation.xlsx'
 
+dados_path = base_dir /'src'/ 'dataframe' / 'gym_recommendation.xlsx'
 dados = pd.read_excel(dados_path)
 dados.drop(columns=['Diet', "ID"], inplace=True)
 dados.columns = ['Sexo', 'Idade', 'Altura', 'Peso', 'Hipertensao', 'Diabetes', 'IMC','Nivel', 'Objetivo', 'Tipo_Fitness', 'Exercicios', 'Dieta', 'Equipamento']
@@ -22,14 +28,8 @@ for col in ['Sexo', 'Hipertensao', 'Diabetes', 'Nivel', 'Objetivo', 'Tipo_Fitnes
     dados[col] = label_enc.fit_transform(dados[col])
 
 scaler = StandardScaler()
-dados[['Idade', 'Altura', 'Peso', 'IMC']] = scaler.fit_transform(
-    dados[['Idade', 'Altura', 'Peso', 'IMC']]
-)
-
-colunas_features = [
-    'Sexo', 'Idade', 'Altura', 'Peso', 'Hipertensao', 'Diabetes', 'IMC',
-    'Nivel', 'Objetivo', 'Tipo_Fitness'
-]
+dados[['Idade', 'Altura', 'Peso', 'IMC']] = scaler.fit_transform(dados[['Idade', 'Altura', 'Peso', 'IMC']])
+colunas_features = ['Sexo', 'Idade', 'Altura', 'Peso', 'Hipertensao', 'Diabetes', 'IMC', 'Nivel', 'Objetivo', 'Tipo_Fitness']
 
 X = dados[colunas_features]
 y_exercicio = dados['Exercicios']
@@ -88,6 +88,8 @@ def recomendar(usuario_input):
             df_saida.to_csv(csv_path, mode='a', header=False, index=False)
         else:
             df_saida.to_csv(csv_path, index=False)
+
+        db.inserir_avaliacao(df_saida)
 
         return {"id": id_hash, "Recomendacao_Exercicio": rec_ex, "Recomendacao_Equipamento": rec_equip}
     except Exception as e:

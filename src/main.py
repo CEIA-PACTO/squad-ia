@@ -5,9 +5,23 @@ from fastapi.templating import Jinja2Templates
 from src.endpoint.formulario import UsuarioInput, AvaliacaoInput
 from src.endpoint.recomendador import recomendar, avaliar
 from fastapi.staticfiles import StaticFiles
-
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+import traceback
 
 app = FastAPI()
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    print("Erro de validação no endpoint:", request.url)
+    print("Detalhes do erro:")
+    traceback.print_exc()  # ou apenas: print(exc)
+    return JSONResponse(
+        status_code=422,
+        content={"erro": "Erro de validação", "detalhes": exc.errors()},
+    )
 
 templates = Jinja2Templates(directory="src/templates")
 
@@ -103,9 +117,17 @@ async def avaliar_form(
     context = {"request": request, **resp}
     return templates.TemplateResponse("avaliado.html", context)
 
+import traceback
+
 @app.post("/recomendar")
 def post_recomendar(usuario: UsuarioInput):
-    return recomendar(usuario)
+    try:
+        return recomendar(usuario)
+    except Exception as e:
+        print("Erro ao executar 'recomendar':")
+        traceback.print_exc()  # Exibe o stack trace completo no terminal
+        return {"erro": str(e)}
+
 
 @app.post("/avaliar")
 def post_avaliar(avaliacao: AvaliacaoInput):
