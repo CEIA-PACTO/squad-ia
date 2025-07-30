@@ -18,8 +18,6 @@ class UsuarioInput(BaseModel):
     importancia_amigos: int
     importancia_resultados: int
     importancia_diversao: int
-<<<<<<< HEAD
-=======
     # Scores HEXAD adicionados
     score_philanthropist: float = 0.0
     score_socialiser: float = 0.0
@@ -27,7 +25,6 @@ class UsuarioInput(BaseModel):
     score_player: float = 0.0
     score_free_spirit: float = 0.0
     score_disruptor: float = 0.0
->>>>>>> d898103 (feat: integrate amnesia dataset with HEXAD-based challenge recommendations)
 
 class AvaliacaoInput(BaseModel):
     usuario: str
