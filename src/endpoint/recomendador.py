@@ -2,8 +2,6 @@ import pandas as pd
 import datetime
 import random
 import hashlib
-<<<<<<< HEAD
-=======
 import json
 import ast
 from pathlib import Path
@@ -75,10 +73,6 @@ def get_challenge_details(challenge_ids):
     return challenges
 
 def recomendar(usuario_input):
-<<<<<<< HEAD
-
-=======
->>>>>>> d898103 (feat: integrate amnesia dataset with HEXAD-based challenge recommendations)
     try:
         dados_dict = usuario_input.dict()
         usuario = dados_dict['usuario']
@@ -195,11 +189,6 @@ def recomendar(usuario_input):
         else:
             df_saida.to_csv(csv_path, index=False)
 
-<<<<<<< HEAD
-        return {"id": id_hash, "Recomendacao_Exercicio": rec_ex, "Recomendacao_Equipamento": rec_equip}
-    except Exception as e:
-        return e
-=======
         return {
             "id": id_hash, 
             "desafios": desafios_detalhados,
