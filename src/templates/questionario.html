@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Questionário</title>
+</head>
+<body>
+    <h1>Preencha seu perfil</h1>
+    <form method="post" action="/recomendar-form">
+        <input type="hidden" name="usuario" value="{{ usuario }}">
+        <input type="hidden" name="senha" value="{{ senha }}">
+
+        <!-- Exemplo de campos -->
+        <label>Sexo:</label><input type="number" name="Sexo"><br>
+        <label>Idade:</label><input type="number" name="Idade"><br>
+        <label>Altura:</label><input type="number" step="0.01" name="Altura"><br>
+        <label>Peso:</label><input type="number" step="0.01" name="Peso"><br>
+        <!-- ... outros campos -->
+        <label>Persona Primária:</label><input type="text" name="persona_primaria"><br>
+        <label>Persona Secundária:</label><input type="text" name="persona_secundaria"><br>
+        <!-- ... -->
+
+        <button type="submit">Enviar</button>
+    </form>
+</body>
+</html>

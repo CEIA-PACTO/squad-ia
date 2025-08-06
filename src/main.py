@@ -1,47 +1,49 @@
+import traceback
 from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import JSONResponse, HTMLResponse, RedirectResponse
+from fastapi.exceptions import RequestValidationError
 from fastapi.templating import Jinja2Templates
+from pydantic import BaseModel, Field
 
 from src.endpoint.formulario import UsuarioInput, AvaliacaoInput
 from src.endpoint.recomendador import recomendar, avaliar
-from fastapi.staticfiles import StaticFiles
-from fastapi import FastAPI, Request
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
-import traceback
 
-app = FastAPI()
+app = FastAPI(
+    title="API de Recomendação Fitness",
+    description="API para recomendar treinos personalizados e avaliar o progresso de usuários.",
+    version="1.0.0"
+)
+
+templates = Jinja2Templates(directory="src/templates")
 
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     print("Erro de validação no endpoint:", request.url)
-    print("Detalhes do erro:")
-    traceback.print_exc()  # ou apenas: print(exc)
+    traceback.print_exc()
     return JSONResponse(
         status_code=422,
         content={"erro": "Erro de validação", "detalhes": exc.errors()},
     )
 
-templates = Jinja2Templates(directory="src/templates")
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-@app.post("/questionario")
+@app.post("/questionario", include_in_schema=False)
 async def questionario(usuario: str = Form(...), senha: str = Form(...)):
     return RedirectResponse(f"/questionario?usuario={usuario}&senha={senha}", status_code=303)
 
 
-@app.get("/questionario", response_class=HTMLResponse)
+@app.get("/questionario", response_class=HTMLResponse, include_in_schema=False)
 async def questionario_form(request: Request, usuario: str, senha: str):
     context = {"request": request, "usuario": usuario, "senha": senha}
     return templates.TemplateResponse("questionario.html", context)
 
 
-@app.post("/recomendar-form", response_class=HTMLResponse)
+@app.post("/recomendar-form", response_class=HTMLResponse, include_in_schema=False)
 async def recomendar_form(
     request: Request,
     usuario: str = Form(...),
@@ -92,7 +94,7 @@ async def recomendar_form(
     return templates.TemplateResponse("recomendacao.html", context)
 
 
-@app.post("/avaliar-form", response_class=HTMLResponse)
+@app.post("/avaliar-form", response_class=HTMLResponse, include_in_schema=False)
 async def avaliar_form(
     request: Request,
     usuario: str = Form(...),
@@ -117,18 +119,31 @@ async def avaliar_form(
     context = {"request": request, **resp}
     return templates.TemplateResponse("avaliado.html", context)
 
-import traceback
 
-@app.post("/recomendar")
+@app.post(
+    "/recomendar",
+    summary="Gerar recomendação",
+    description="Recebe os dados do usuário e retorna uma recomendação de treino personalizada."
+)
 def post_recomendar(usuario: UsuarioInput):
+    """
+    Gera recomendação personalizada com base nos dados físicos e objetivos do usuário.
+    """
     try:
         return recomendar(usuario)
     except Exception as e:
         print("Erro ao executar 'recomendar':")
-        traceback.print_exc()  # Exibe o stack trace completo no terminal
+        traceback.print_exc()
         return {"erro": str(e)}
 
 
-@app.post("/avaliar")
+@app.post(
+    "/avaliar",
+    summary="Avaliar progresso",
+    description="Avalia o progresso do usuário com base no histórico de execução."
+)
 def post_avaliar(avaliacao: AvaliacaoInput):
+    """
+    Recebe dados de avaliação e retorna uma análise de progresso com base no desempenho do usuário.
+    """
     return avaliar(avaliacao)

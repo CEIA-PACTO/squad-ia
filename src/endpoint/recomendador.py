@@ -1,6 +1,7 @@
 import pandas as pd
 import datetime
 import random
+import traceback
 import hashlib
 from pathlib import Path
 from fastapi import HTTPException
@@ -9,70 +10,80 @@ from sklearn.metrics.pairwise import cosine_similarity
 from src.endpoint.formulario import UsuarioInput, AvaliacaoInput
 from src.models.postgrees import DatabaseInitializer
 
-db = DatabaseInitializer(
-        host="localhost",
-        dbname="gameficacao",
-        user="admin",
-        password="admin"
-    )
 
 base_dir = Path(__file__).resolve().parents[2]
+db = DatabaseInitializer(host="localhost", dbname="gameficacao", user="admin", password="admin")
 
-dados_path = base_dir /'src'/ 'dataframe' / 'gym_recommendation.xlsx'
-dados = pd.read_excel(dados_path)
-dados.drop(columns=['Diet', "ID"], inplace=True)
-dados.columns = ['Sexo', 'Idade', 'Altura', 'Peso', 'Hipertensao', 'Diabetes', 'IMC','Nivel', 'Objetivo', 'Tipo_Fitness', 'Exercicios', 'Dieta', 'Equipamento']
-
-label_enc = LabelEncoder()
-for col in ['Sexo', 'Hipertensao', 'Diabetes', 'Nivel', 'Objetivo', 'Tipo_Fitness']:
-    dados[col] = label_enc.fit_transform(dados[col])
-
-scaler = StandardScaler()
-dados[['Idade', 'Altura', 'Peso', 'IMC']] = scaler.fit_transform(dados[['Idade', 'Altura', 'Peso', 'IMC']])
 colunas_features = ['Sexo', 'Idade', 'Altura', 'Peso', 'Hipertensao', 'Diabetes', 'IMC', 'Nivel', 'Objetivo', 'Tipo_Fitness']
 
-X = dados[colunas_features]
-y_exercicio = dados['Exercicios']
-y_equip = dados['Equipamento']
+def gym_recomendation():
 
-recomendacoes_fixas = [
-    {'Exercicio': 'Treino Funcional', 'Equipamento': 'Elásticos de resistência'},
-    {'Exercicio': 'HIIT', 'Equipamento': 'Esteira'},
-    {'Exercicio': 'Pilates', 'Equipamento': 'Bola suíça'},
-    {'Exercicio': 'Musculação', 'Equipamento': 'Halteres'},
-    {'Exercicio': 'CrossFit', 'Equipamento': 'Caixa pliométrica'}
-]
+    dados_path = base_dir /'src'/ 'dataframe' / 'gym_recommendation.xlsx'
+    dados = pd.read_excel(dados_path)
+
+    dados.drop(columns=['Diet', "ID"], inplace=True)
+    dados.columns = ['Sexo', 'Idade', 'Altura', 'Peso', 'Hipertensao', 'Diabetes', 'IMC','Nivel', 'Objetivo', 'Tipo_Fitness', 'Exercicios', 'Dieta', 'Equipamento']
+
+    label_enc = LabelEncoder()
+    for col in ['Sexo', 'Hipertensao', 'Diabetes', 'Nivel', 'Objetivo', 'Tipo_Fitness']:
+        dados[col] = label_enc.fit_transform(dados[col])
+
+    X = dados[colunas_features]
+    y_exercicio = dados['Exercicios']
+    y_equip = dados['Equipamento']
+
+    return dados, X
+
 
 def gerar_id(usuario: str, senha: str) -> str:
     return hashlib.sha256((usuario + senha).encode('utf-8')).hexdigest()
 
 def recomendar(usuario_input):
-
     try:
+        # Carrega desafios fixos
+        recomendacoes_fixas = pd.read_json(base_dir / 'src' / "dataframe" / "challenger.json")
+
+        # Carrega base de dados e features
+        dados, X = gym_recomendation()
+
+        # Converte entrada para dicionário
         dados_dict = usuario_input.dict()
+        print("=== DADOS DE ENTRADA ===")
+        print(dados_dict)
+
+        # Geração de ID
         usuario = dados_dict['usuario']
         senha = dados_dict['senha']
-
         id_hash = gerar_id(usuario, senha)
+
+        # Remove senha para não salvar
         entrada_sem_senha = dados_dict.copy()
         entrada_sem_senha.pop('senha')
+
+        # Monta DataFrame com as features
         entrada_df = pd.DataFrame([dados_dict])
-        entrada_df[['Idade', 'Altura', 'Peso', 'IMC']] = scaler.transform(entrada_df[['Idade', 'Altura', 'Peso', 'IMC']])
         entrada_features = entrada_df[colunas_features]
 
+        # Decide entre recomendação fixa ou baseada em similaridade
         usar_dicionario = random.random() < 0.2
         if usar_dicionario:
-            rec = random.choice(recomendacoes_fixas)
-            rec_ex = rec['Exercicio']
-            rec_equip = rec['Equipamento']
+            rec = recomendacoes_fixas.sample(n=1).iloc[0]
+            print("⚠️ Usando recomendação aleatória do challenger.json")
 
+            # Ajuste para campos existentes no JSON de desafio
+            rec_ex = rec['description']
+            rec_equip = f"Complete {rec['target_sessions']} sessões em {rec['duration']} dias"
         else:
+            # Calcula similaridade
             scores_sim = cosine_similarity(X, entrada_features).flatten()
             idx_top = scores_sim.argsort()[-5:][::-1]
             dados_similares = dados.iloc[idx_top]
+
+            # Recomendação por maioria
             rec_ex = dados_similares['Exercicios'].mode()[0]
             rec_equip = dados_similares['Equipamento'].mode()[0]
 
+        # Registro de recomendação
         registro = {
             'id': id_hash,
             'Data_Hora': datetime.datetime.now().isoformat(),
@@ -82,6 +93,7 @@ def recomendar(usuario_input):
             'Recomendacao_Fixa_Usada': usar_dicionario
         }
 
+        # Salva recomendação em CSV
         csv_path = base_dir / "registro_recomendacoes.csv"
         df_saida = pd.DataFrame([registro])
         if csv_path.exists():
@@ -89,11 +101,25 @@ def recomendar(usuario_input):
         else:
             df_saida.to_csv(csv_path, index=False)
 
-        db.inserir_avaliacao(df_saida)
+        # Insere no banco
+        # db.inserir_avaliacao(df_saida)
 
-        return {"id": id_hash, "Recomendacao_Exercicio": rec_ex, "Recomendacao_Equipamento": rec_equip}
+        # Retorno final
+        resultado = {
+            "id": id_hash,
+            "Recomendacao_Exercicio": rec_ex,
+            "Recomendacao_Equipamento": rec_equip
+        }
+        print("✅ RECOMENDAÇÃO GERADA:", resultado)
+        return resultado
+
     except Exception as e:
-        return e
+        tb = traceback.format_exc()
+        print("❌ Traceback completo:")
+        print(tb)
+        raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")
+
+
 
 def avaliar(avaliacao_input: AvaliacaoInput):
     dados_dict = avaliacao_input.dict()

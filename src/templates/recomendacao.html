@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recomendação</title>
+</head>
+<body>
+    <h1>Recomendação Personalizada</h1>
+    <p>Olá {{ usuario }}, aqui está sua recomendação:</p>
+
+    <pre>{{ recomendacao }}</pre>
+
+    <form method="post" action="/avaliar-form">
+        <input type="hidden" name="usuario" value="{{ usuario }}">
+        <input type="hidden" name="senha" value="{{ senha }}">
+        <!-- Campos de avaliação -->
+        <label>Sucesso (true/false):</label><input name="success"><br>
+        <label>Streak:</label><input name="streak" type="number"><br>
+        <label>Progresso (%):</label><input name="progress_pct" type="number"><br>
+        <label>Nota (1-5):</label><input name="rating" type="number"><br>
+        <label>Tempo gasto:</label><input name="time" type="number"><br>
+        <button type="submit">Avaliar</button>
+    </form>
+</body>
+</html>

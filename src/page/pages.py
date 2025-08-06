@@ -4,7 +4,109 @@ import streamlit as st
 def calcular_imc(peso, altura):
     return round(peso / (altura ** 2), 2)
 
+def cabecalho_customizado():
+    st.markdown("""
+        <style>
+            .top-header {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 9999;
+                background-color: #0000FF;
+                padding: 10px 30px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                color: white;
+                font-family: 'Segoe UI', sans-serif;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            }
+
+            .top-header h1 {
+                margin: 0;
+                font-size: 24px;
+            }
+
+            .nav-links a {
+                color: white;
+                margin-left: 20px;
+                text-decoration: none;
+                font-size: 16px;
+                font-weight: bold;
+            }
+
+            .nav-links a:hover {
+                text-decoration: underline;
+            }
+
+            /* empurra o conteúdo da página para baixo */
+            .spacer {
+                height: 70px;
+            }
+        </style>
+
+        <div class="top-header">
+            <h1>Formulário de Gamificação</h1>
+            <div class="nav-links">
+                <a href="/?page=login">Login</a>
+                <a href="/?page=hexad">Hexad</a>
+                <a href="/?page=info">Info</a>
+                <a href="/?page=recomendacao">Recomendação</a>
+                <a href="/?page=avaliacao">Avaliação</a>
+            </div>
+        </div>
+        <div class="spacer"></div>
+    """, unsafe_allow_html=True)
+
+
+def aplicar_estilo():
+    st.markdown("""
+        <style>
+            /* Fundo geral da página */
+            body {
+                background-color: white;
+            }
+
+            /* Botão azul com texto branco */
+            .stButton>button {
+                background-color: #0000FF;
+                color: white;
+                border-radius: 8px;
+            }
+
+            /* Input text, password e textarea com fundo azul-claro e sem borda visível */
+            input[type="text"], input[type="password"], textarea {
+                background-color: #E0F0FF;
+                border: none;
+                border-radius: 10px;
+                padding: 10px;
+                color: black;
+            }
+
+            /* Remove o contorno azul ao focar */
+            input:focus, textarea:focus {
+                outline: none;
+                box-shadow: none;
+            }
+
+            /* Ajusta selectbox para fundo azul-claro */
+            .stSelectbox div[data-baseweb="select"] {
+                background-color: #E0F0FF;
+                border: none;
+                border-radius: 10px;
+                color: black;
+                padding: 5px;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
 def tela_login():
+    aplicar_estilo()
+    cabecalho_customizado()
+
     st.title("🔐 Login")
     usuario = st.text_input("Usuário")
     senha = st.text_input("Senha", type="password")
@@ -15,9 +117,13 @@ def tela_login():
                 "usuario": usuario,
                 "senha": senha
             }
-            st.experimental_set_query_params(page="hexad")
+
+            st.session_state.page_to_navigate = "hexad"
+            st.rerun()
         else:
             st.warning("Preencha usuário e senha.")
+
+
 
 
 def tela_hexad():
@@ -38,7 +144,8 @@ def tela_hexad():
             "importancia_resultados": importancia_resultados,
             "importancia_diversao": importancia_diversao
         })
-        st.experimental_set_query_params(page="info")
+        st.session_state.page_to_navigate = "info"
+        st.rerun()
 
 
 def tela_info_pessoal():
@@ -70,7 +177,8 @@ def tela_info_pessoal():
             "Objetivo": {"Emagrecer": 1, "Ganho de Massa": 2, "Condicionamento": 3, "Outro": 4}[objetivo],
             "Tipo_Fitness": {"Funcional": 0, "Musculação": 1, "Cardio": 2, "Outro": 3}[tipo_fitness]
         })
-        st.experimental_set_query_params(page="recomendacao")
+        st.session_state.page_to_navigate = "recomendacao"
+        st.rerun()
 
 
 def tela_recomendacao():
@@ -103,7 +211,8 @@ def tela_recomendacao():
     st.markdown("---")
     st.markdown("### Deseja avaliar a recomendação?")
     if st.button("👉 Avaliar Recomendação"):
-        st.experimental_set_query_params(page="avaliacao")
+        st.session_state.page_to_navigate = "avaliacao"
+        st.rerun()
 
 
 def tela_avaliacao():
