@@ -57,7 +57,7 @@ Nota de atualizações
 >05-08-2025
 
 * adicionado documentação swagger de endpoints e schemas. (http://localhost:8000/docs)
-
+* corrigido link externo via ngrok. (ngrok http 8501)
 ---
 ## 📁 Estrutura do Projeto
 

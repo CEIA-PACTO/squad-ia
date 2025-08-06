@@ -4,7 +4,8 @@ from page.pages import (
     tela_hexad,
     tela_info_pessoal,
     tela_recomendacao,
-    tela_avaliacao
+    tela_avaliacao,
+    tela_cluster
 )
 
 def cabecalho_customizado():
@@ -84,11 +85,18 @@ def cabecalho_customizado():
 
 def muda_pagina(pagina):
     st.session_state.pagina = pagina
+    st.query_params["pagina"] = pagina
     st.rerun()
 
-
-
 def main():
+    # 🔄 Sincroniza o parâmetro da URL com session_state
+    query_params = st.query_params  # ou st.experimental_get_query_params() se estiver usando versão antiga
+    pagina_url = query_params.get("pagina", [None])[0] if isinstance(query_params.get("pagina"), list) else query_params.get("pagina")
+
+    if pagina_url and pagina_url != st.session_state.get("pagina"):
+        st.session_state.pagina = pagina_url
+
+
     cabecalho_customizado()
 
     # Página inicial padrão
@@ -109,6 +117,8 @@ def main():
         "info": tela_info_pessoal,
         "recomendacao": tela_recomendacao,
         "avaliacao": tela_avaliacao,
+        "cluster": tela_cluster,
+
     }
 
     # Executa a tela da página atual
