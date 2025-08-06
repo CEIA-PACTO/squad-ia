@@ -54,8 +54,10 @@ http://localhost:8000/docs
 ---
 Nota de atualizações
 
-05-08-2025
+>05-08-2025
+
 * adicionado documentação swagger de endpoints e schemas. (http://localhost:8000/docs)
+
 ---
 ## 📁 Estrutura do Projeto
 

@@ -65,14 +65,17 @@ def recomendar(usuario_input):
         entrada_features = entrada_df[colunas_features]
 
         # Decide entre recomendação fixa ou baseada em similaridade
-        usar_dicionario = random.random() < 0.2
+        usar_dicionario = random.random() < 0.99
         if usar_dicionario:
-            rec = recomendacoes_fixas.sample(n=1).iloc[0]
+            rec = recomendacoes_fixas.sample(n=5).iloc[0]
             print("⚠️ Usando recomendação aleatória do challenger.json")
 
-            # Ajuste para campos existentes no JSON de desafio
             rec_ex = rec['description']
             rec_equip = f"Complete {rec['target_sessions']} sessões em {rec['duration']} dias"
+            desafio_info = rec.to_dict()
+
+            return desafio_info
+
         else:
             # Calcula similaridade
             scores_sim = cosine_similarity(X, entrada_features).flatten()
