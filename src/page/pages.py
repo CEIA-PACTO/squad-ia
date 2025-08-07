@@ -29,63 +29,55 @@ def tela_login():
         else:
             st.warning("Preencha usuário e senha.")
 
-
-
-
 def tela_hexad():
     st.title("🎮 Perfil Gamificado - Modelo HEXAD")
-    st.markdown("Se você **não sabe** seu perfil, acesse: [HEXAD Quiz](https://www.gamified.uk/user-types/)")
+    st.markdown("<b>Ajuste os níveis (entre 0 e 1) para cada persona do seu perfil HEXAD.</b>")
 
-    persona_primaria = st.selectbox("Persona primária", ["conquistador", "jogador", "filantropo", "socializador", "livre", "disruptor"])
-    persona_secundaria = st.selectbox("Persona secundária", ["conquistador", "jogador", "filantropo", "socializador", "livre", "disruptor"])
-    importancia_amigos = st.slider("Importância dos amigos", 0, 5)
-    importancia_resultados = st.slider("Importância dos resultados", 0, 5)
-    importancia_diversao = st.slider("Importância da diversão", 0, 5)
+    score_philanthropist = st.slider("Philanthropist", 0.0, 1.0, 0.5)
+    score_socialiser = st.slider("Socialiser", 0.0, 1.0, 0.5)
+    score_achiever = st.slider("Achiever", 0.0, 1.0, 0.5)
+    score_player = st.slider("Player", 0.0, 1.0, 0.5)
+    score_free_spirit = st.slider("Free Spirit", 0.0, 1.0, 0.5)
+    score_disruptor = st.slider("Disruptor", 0.0, 1.0, 0.5)
 
     if st.button("Próxima Etapa"):
         st.session_state.dados.update({
-            "persona_primaria": persona_primaria,
-            "persona_secundaria": persona_secundaria,
-            "importancia_amigos": importancia_amigos,
-            "importancia_resultados": importancia_resultados,
-            "importancia_diversao": importancia_diversao
+            "score_philanthropist": score_philanthropist,
+            "score_socialiser": score_socialiser,
+            "score_achiever": score_achiever,
+            "score_player": score_player,
+            "score_free_spirit": score_free_spirit,
+            "score_disruptor": score_disruptor,
         })
         st.session_state.page_to_navigate = "info"
         st.rerun()
 
-
 def tela_info_pessoal():
     st.title("📋 Informações Pessoais")
 
-    sexo = st.radio("Sexo", ["Masculino", "Feminino", "Outro"])
-    idade = st.number_input("Idade", min_value=0, max_value=120, step=1)
-    altura = st.number_input("Altura (m)", min_value=0.5, max_value=2.5, step=0.01)
-    peso = st.number_input("Peso (kg)", min_value=0.0, max_value=300.0, step=0.1)
+    age = st.number_input("Idade", min_value=0, max_value=120, step=1)
+    height = st.number_input("Altura (cm)", min_value=100.0, max_value=250.0, step=0.1)
+    weight = st.number_input("Peso (kg)", min_value=0.0, max_value=300.0, step=0.1)
 
-    hipertensao = st.checkbox("Você tem hipertensão?")
-    diabetes = st.checkbox("Você tem diabetes?")
-
-    nivel = st.selectbox("Nível de atividade física", ["Iniciante", "Intermediário", "Avançado"])
-    objetivo = st.selectbox("Objetivo", ["Emagrecer", "Ganho de Massa", "Condicionamento", "Outro"])
-    tipo_fitness = st.selectbox("Tipo de treino preferido", ["Funcional", "Musculação", "Cardio", "Outro"])
+    body_type = st.selectbox("Sexo", ["Masculino", "Feminino", "Outro"])
+    goal = st.selectbox("Objetivo", ["Emagrecimento", "Ganho de Massa", "Condicionamento", "Outro"])
+    training_days = st.slider("Dias de treino por semana", 1, 7, 3)
+    training_time = st.slider("Tempo médio de treino (minutos)", 10, 180, 45)
+    experience_level = st.selectbox("Nível de experiência", ["Iniciante", "Intermediário", "Avançado"])
 
     if st.button("Finalizar"):
-        imc = calcular_imc(peso, altura)
         st.session_state.dados.update({
-            "Sexo": {"Masculino": 1, "Feminino": 2, "Outro": 3}[sexo],
-            "Idade": idade,
-            "Altura": altura,
-            "Peso": peso,
-            "Hipertensao": int(hipertensao),
-            "Diabetes": int(diabetes),
-            "IMC": imc,
-            "Nivel": {"Iniciante": 1, "Intermediário": 2, "Avançado": 3}[nivel],
-            "Objetivo": {"Emagrecer": 1, "Ganho de Massa": 2, "Condicionamento": 3, "Outro": 4}[objetivo],
-            "Tipo_Fitness": {"Funcional": 0, "Musculação": 1, "Cardio": 2, "Outro": 3}[tipo_fitness]
+            "age": age,
+            "height": height,
+            "weight": weight,
+            "body_type": body_type,
+            "goal": goal,
+            "training_days": training_days,
+            "training_time": training_time,
+            "experience_level": experience_level
         })
         st.session_state.page_to_navigate = "recomendacao"
         st.rerun()
-
 
 def tela_recomendacao():
     st.title("✅ Cadastro Concluído")
