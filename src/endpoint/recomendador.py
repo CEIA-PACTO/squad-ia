@@ -77,7 +77,7 @@ def recomendar(usuario_input):
 
         id_hash = gerar_id(usuario, senha)
         entrada_sem_senha = dados_dict.copy()
-        entrada_sem_senha.pop('senha')
+
 
         # Determinar perfil HEXAD dominante baseado nos scores
         hexad_scores = {
@@ -143,27 +143,38 @@ def recomendar(usuario_input):
         return {"error": str(e)}
 
 def avaliar(avaliacao_input: AvaliacaoInput):
+    import datetime
+    import pandas as pd
+    from fastapi import HTTPException
+
     dados_dict = avaliacao_input.dict()
     usuario = dados_dict['usuario']
     senha = dados_dict['senha']
+
+    print("aaa", usuario, senha)
     id_hash = gerar_id(usuario, senha)
+    print("id", id_hash)
 
     rec_csv = base_dir / "registro_recomendacoes.csv"
     if not rec_csv.exists():
         raise HTTPException(status_code=404, detail="Nenhuma recomendação registrada ainda.")
 
     df_rec = pd.read_csv(rec_csv)
+    print(df_rec)
     df_user = df_rec[df_rec['id'] == id_hash]
     if df_user.empty:
         raise HTTPException(status_code=404, detail="Nenhuma recomendação encontrada para este usuário.")
 
     ultima = df_user.iloc[-1].to_dict()
+    print("ultima:", ultima)
 
     avaliacao = {
         'id': id_hash,
         'Data_Hora_Avaliacao': datetime.datetime.now().isoformat(),
-        'Recomendacao_Exercicio': ultima['Recomendacao_Exercicio'],
-        'Recomendacao_Equipamento': ultima['Recomendacao_Equipamento'],
+        'Recomendacao_Desafio': ultima.get('Recomendacao_Desafio'),
+        'Recomendacao_Tipo': ultima.get('Recomendacao_Tipo'),
+        'Recomendacao_Duracao': ultima.get('Recomendacao_Duracao'),
+        'Recomendacao_Sessoes': ultima.get('Recomendacao_Sessoes'),
         'success': dados_dict['success'],
         'streak': dados_dict['streak'],
         'progress_pct': dados_dict['progress_pct'],

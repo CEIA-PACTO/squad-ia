@@ -76,7 +76,7 @@ def tela_info_pessoal():
             "training_time": training_time,
             "experience_level": experience_level
         })
-        st.session_state.page_to_navigate = "recomendacao"
+        st.session_state.page_to_navigate = "cluster"
         st.rerun()
 
 def tela_recomendacao():
@@ -262,3 +262,8 @@ def tela_cluster():
 
         Isso sugere que o usuário tem características mais alinhadas com os perfis acima.
     """)
+
+    if st.button("..."):
+        st.session_state.page_to_navigate = "recomendacao"
+        st.rerun()
+

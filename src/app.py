@@ -93,6 +93,7 @@ def main():
     query_params = st.query_params  # ou st.experimental_get_query_params() se estiver usando versão antiga
     pagina_url = query_params.get("pagina", [None])[0] if isinstance(query_params.get("pagina"), list) else query_params.get("pagina")
 
+
     if pagina_url and pagina_url != st.session_state.get("pagina"):
         st.session_state.pagina = pagina_url
 
