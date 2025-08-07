@@ -5,11 +5,7 @@ from page.pages import (tela_login,
                         tela_recomendacao,
                         tela_avaliacao)
 
-<<<<<<< HEAD
-pagina = st.experimental_get_query_params().get("page", ["login"])[0]
-=======
 pagina = st.query_params.get("page", "login")
->>>>>>> d898103 (feat: integrate amnesia dataset with HEXAD-based challenge recommendations)
 
 rotas = {
     "login": tela_login,

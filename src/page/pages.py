@@ -17,11 +17,7 @@ def tela_login():
                 "usuario": usuario,
                 "senha": senha
             }
-<<<<<<< HEAD
-            st.experimental_set_query_params(page="hexad")
-=======
             st.query_params["page"] = "hexad"
->>>>>>> d898103 (feat: integrate amnesia dataset with HEXAD-based challenge recommendations)
         else:
             st.warning("Preencha usuário e senha.")
 
@@ -52,11 +48,7 @@ def tela_hexad():
             "score_player": score_player,
             "score_disruptor": score_disruptor
         })
-<<<<<<< HEAD
-        st.experimental_set_query_params(page="info")
-=======
         st.query_params["page"] = "info"
->>>>>>> d898103 (feat: integrate amnesia dataset with HEXAD-based challenge recommendations)
 
 
 def tela_info_pessoal():
@@ -89,11 +81,7 @@ def tela_info_pessoal():
             "training_time": training_time,
             "experience_level": experience_level
         })
-<<<<<<< HEAD
-        st.experimental_set_query_params(page="recomendacao")
-=======
         st.query_params["page"] = "recomendacao"
->>>>>>> d898103 (feat: integrate amnesia dataset with HEXAD-based challenge recommendations)
 
 
 def tela_recomendacao():
@@ -143,11 +131,7 @@ def tela_recomendacao():
 
     st.markdown("### Deseja avaliar a recomendação?")
     if st.button("👉 Avaliar Recomendação"):
-<<<<<<< HEAD
-        st.experimental_set_query_params(page="avaliacao")
-=======
         st.query_params["page"] = "avaliacao"
->>>>>>> d898103 (feat: integrate amnesia dataset with HEXAD-based challenge recommendations)
 
 
 def tela_avaliacao():
