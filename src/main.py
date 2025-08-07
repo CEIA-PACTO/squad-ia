@@ -137,13 +137,12 @@ def post_recomendar(usuario: UsuarioInput):
         return {"erro": str(e)}
 
 
-@app.post(
-    "/avaliar",
-    summary="Avaliar progresso",
-    description="Avalia o progresso do usuário com base no histórico de execução."
-)
+@app.post("/avaliar", summary="Avaliar progresso", description="Avalia o progresso do usuário com base no histórico de execução.")
 def post_avaliar(avaliacao: AvaliacaoInput):
     """
     Recebe dados de avaliação e retorna uma análise de progresso com base no desempenho do usuário.
     """
+    print(avaliacao)
     return avaliar(avaliacao)
+
+

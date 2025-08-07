@@ -58,7 +58,6 @@ def recomendar(usuario_input):
 
         # Remove senha para não salvar
         entrada_sem_senha = dados_dict.copy()
-        entrada_sem_senha.pop('senha')
 
         # Monta DataFrame com as features
         entrada_df = pd.DataFrame([dados_dict])
@@ -103,9 +102,6 @@ def recomendar(usuario_input):
             df_saida.to_csv(csv_path, mode='a', header=False, index=False)
         else:
             df_saida.to_csv(csv_path, index=False)
-
-        # Insere no banco
-        # db.inserir_avaliacao(df_saida)
 
         # Retorno final
         resultado = {

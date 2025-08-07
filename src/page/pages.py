@@ -144,7 +144,7 @@ def tela_avaliacao():
             "rating": rating,
             "time": time
         }
-
+        print(payload_avaliacao)
         if success == "Sim":
             st.session_state.avaliacoes_positivas += 1
 
