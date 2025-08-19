@@ -1,5 +1,5 @@
 import streamlit as st
-from src.page.pages import (
+from page.pages import (
     tela_login,
     tela_hexad,
     tela_info_pessoal,
