@@ -8,6 +8,23 @@ from page.pages import (
     tela_cluster
 )
 
+import subprocess
+import threading
+import time
+
+def start_backend():
+    subprocess.Popen(
+        ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"],
+    )
+
+# Só inicia uma vez
+if "backend_started" not in st.session_state:
+    threading.Thread(target=start_backend, daemon=True).start()
+    st.session_state.backend_started = True
+    time.sleep(2)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
 def cabecalho_customizado():
     st.markdown("""
         <style>
